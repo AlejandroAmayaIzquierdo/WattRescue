@@ -6,6 +6,7 @@ public class Story
     public required string Title { get; set; }
     public DateTime? CreateDate { get; set; }
     public DateTime? ModifyDate { get; set; }
+    public DateTime? LastScrapedDate { get; set; } = null;
 
     public string? Cover { get; set; }
     public string? Description { get; set; }
@@ -14,5 +15,5 @@ public class Story
 
     public int NumParts { get; set; }
 
-    public Parts[] Parts { get; set; } = [];
+    public List<Part> Parts { get; set; } = [];
 }

@@ -42,6 +42,8 @@ builder.Services.AddQuartzServer(options => options.WaitForJobsToComplete = true
 
 builder.Services.AddScoped<StoriesService>();
 
+builder.Services.AddTransient<ScrapperService>();
+
 // Add Razor Pages support
 builder.Services.AddRazorPages();
 

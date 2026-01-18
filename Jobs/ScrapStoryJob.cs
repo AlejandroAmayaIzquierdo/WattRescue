@@ -6,9 +6,10 @@ using Services;
 
 namespace Jobs;
 
-public class ScrapStoryJob(StoriesService storiesService) : IJob
+public class ScrapStoryJob(StoriesService storiesService, ScrapperService scrapperService) : IJob
 {
     public readonly StoriesService _storiesService = storiesService;
+    public readonly ScrapperService _scrapperService = scrapperService;
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -26,38 +27,38 @@ public class ScrapStoryJob(StoriesService storiesService) : IJob
 
         Console.WriteLine($"Title: {story?.Title}");
 
-        var browserFetcher = new BrowserFetcher();
+        foreach (var part in story!.Parts)
+        {
+            if (part.LastScrapedDate is null || part.LastScrapedDate < part.ModifyDate)
+            {
+                Console.WriteLine($"Scraping Part {part.PartNumber}: {part.Title}");
+                string content = await _scrapperService.ScrapeChapterContentAsync(part);
+                Paragraphs[] scrapedPart = _scrapperService.ParseChapterContent(content, part.Id);
 
-        await browserFetcher.DownloadAsync();
+                Console.WriteLine(
+                    $"Scraped Part {part.PartNumber} Content Length: {scrapedPart.Length} characters"
+                );
 
-        var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = false });
+                // Here you can add code to save the scrapedPart back to the database if needed
 
-        var page = await browser.NewPageAsync();
+                part.LastScrapedDate = DateTime.Now;
 
-        await page.GoToAsync(story!.Parts[0].Url);
+                Console.WriteLine(
+                    $"Finished Scraping Part {part.PartNumber}: {part.Title} at {part.LastScrapedDate}"
+                );
 
-        await Task.Delay(2000); // Wait for 2 seconds to ensure the page loads completely
+                part.RawContent = content;
 
-        await page.ClickAsync("#onetrust-reject-all-handler"); // Click the "Reject All" button on the cookie consent banner
+                part.Paragraphs = [.. scrapedPart];
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"Skipping Part {part.PartNumber}: {part.Title}, already up to date."
+                );
+            }
+        }
 
-        await page.EvaluateExpressionAsync(
-            $"document.getElementById('story-part-comments').scrollIntoView();"
-        ); // Scroll to the comments section to load all content
-
-        await Task.Delay(1000); // Wait for 1 seconds to ensure the page loads completely
-
-        string content = await page.GetContentAsync();
-
-        var htmlDoc = new HtmlDocument();
-        htmlDoc.LoadHtml(content);
-
-        var paragraphs = htmlDoc
-            .DocumentNode.Descendants()
-            .Where(n => n.Name == "p" && n.GetAttributeValue("data-p-id", "") != "")
-            .Select(n => n.InnerText.Trim())
-            .ToList();
-
-        foreach (var paragraph in paragraphs)
-            Console.WriteLine(paragraph);
+        await _storiesService.SaveStoryAsync(story);
     }
 }

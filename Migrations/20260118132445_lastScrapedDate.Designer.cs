@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WattRescue.Migrations
 {
     [DbContext(typeof(WattDbContext))]
-    [Migration("20260117205757_init")]
-    partial class init
+    [Migration("20260118132445_lastScrapedDate")]
+    partial class lastScrapedDate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,9 +22,8 @@ namespace WattRescue.Migrations
 
             modelBuilder.Entity("Models.Paragraphs", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
@@ -38,23 +37,23 @@ namespace WattRescue.Migrations
                     b.Property<int>("PartId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PartsId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("PartsId");
+                    b.HasIndex("PartId");
 
                     b.ToTable("Paragraphs");
                 });
 
-            modelBuilder.Entity("Models.Parts", b =>
+            modelBuilder.Entity("Models.Part", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastScrapedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Length")
@@ -65,6 +64,9 @@ namespace WattRescue.Migrations
 
                     b.Property<int>("PartNumber")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("RawContent")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("StoryId")
                         .HasColumnType("TEXT");
@@ -97,6 +99,9 @@ namespace WattRescue.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("LastScrapedDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("ModifyDate")
                         .HasColumnType("TEXT");
 
@@ -117,19 +122,21 @@ namespace WattRescue.Migrations
 
             modelBuilder.Entity("Models.Paragraphs", b =>
                 {
-                    b.HasOne("Models.Parts", null)
+                    b.HasOne("Models.Part", null)
                         .WithMany("Paragraphs")
-                        .HasForeignKey("PartsId");
+                        .HasForeignKey("PartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.Parts", b =>
+            modelBuilder.Entity("Models.Part", b =>
                 {
                     b.HasOne("Models.Story", null)
                         .WithMany("Parts")
                         .HasForeignKey("StoryId");
                 });
 
-            modelBuilder.Entity("Models.Parts", b =>
+            modelBuilder.Entity("Models.Part", b =>
                 {
                     b.Navigation("Paragraphs");
                 });

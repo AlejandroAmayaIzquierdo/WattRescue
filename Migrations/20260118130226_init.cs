@@ -41,6 +41,7 @@ namespace WattRescue.Migrations
                     Url = table.Column<string>(type: "TEXT", nullable: true),
                     PartNumber = table.Column<int>(type: "INTEGER", nullable: false),
                     Length = table.Column<int>(type: "INTEGER", nullable: false),
+                    RawContent = table.Column<string>(type: "TEXT", nullable: true),
                     StoryId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -57,8 +58,7 @@ namespace WattRescue.Migrations
                 name: "Paragraphs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     PartId = table.Column<int>(type: "INTEGER", nullable: false),
                     ParagraphNumber = table.Column<int>(type: "INTEGER", nullable: false),
                     Length = table.Column<int>(type: "INTEGER", nullable: false),
