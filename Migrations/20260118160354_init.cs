@@ -1,0 +1,106 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace WattRescue.Migrations
+{
+    /// <inheritdoc />
+    public partial class init : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "Stories",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifyDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LastScrapedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Cover = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Url = table.Column<string>(type: "TEXT", nullable: true),
+                    NumParts = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Parts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifyDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LastScrapedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Url = table.Column<string>(type: "TEXT", nullable: true),
+                    PartNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    Length = table.Column<int>(type: "INTEGER", nullable: false),
+                    RawContent = table.Column<string>(type: "TEXT", nullable: true),
+                    StoryId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Parts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Parts_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Paragraphs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ParagraphNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    Length = table.Column<int>(type: "INTEGER", nullable: false),
+                    Content = table.Column<string>(type: "TEXT", nullable: true),
+                    PartId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Paragraphs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Paragraphs_Parts_PartId",
+                        column: x => x.PartId,
+                        principalTable: "Parts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Paragraphs_PartId",
+                table: "Paragraphs",
+                column: "PartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Parts_StoryId",
+                table: "Parts",
+                column: "StoryId");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Paragraphs");
+
+            migrationBuilder.DropTable(
+                name: "Parts");
+
+            migrationBuilder.DropTable(
+                name: "Stories");
+        }
+    }
+}

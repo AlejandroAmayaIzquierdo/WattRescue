@@ -19,8 +19,9 @@ namespace WattRescue.Migrations
 
             modelBuilder.Entity("Models.Paragraphs", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
@@ -66,6 +67,7 @@ namespace WattRescue.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StoryId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -119,18 +121,24 @@ namespace WattRescue.Migrations
 
             modelBuilder.Entity("Models.Paragraphs", b =>
                 {
-                    b.HasOne("Models.Part", null)
+                    b.HasOne("Models.Part", "Part")
                         .WithMany("Paragraphs")
                         .HasForeignKey("PartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Part");
                 });
 
             modelBuilder.Entity("Models.Part", b =>
                 {
-                    b.HasOne("Models.Story", null)
+                    b.HasOne("Models.Story", "Story")
                         .WithMany("Parts")
-                        .HasForeignKey("StoryId");
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Story");
                 });
 
             modelBuilder.Entity("Models.Part", b =>

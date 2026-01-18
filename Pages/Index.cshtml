@@ -1,16 +1,13 @@
 @page
-@model WattRescue.Pages.IndexModel
-<!DOCTYPE html>
-<html>
+@model Pages.IndexModel
+@{
+    ViewData["Title"] = "Library";
+}
 
-<head>
-    <meta charset="utf-8" />
-    <title>WattRescue</title>
-</head>
-
-<body>
-    <h1>WattRescue</h1>
-    <p>API disponible en <a href="/swagger">OpenAPI</a>.</p>
-</body>
-
-</html>
+<ul>
+    @foreach (var story in Model.Stories)
+    {
+        <img src="@story.Cover" alt="Cover Image" width="100" />
+        <h2>@story.Title</h2>
+    }
+</ul>

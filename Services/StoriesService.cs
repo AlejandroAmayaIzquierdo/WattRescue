@@ -10,6 +10,11 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
 
     private readonly WattDbContext _dbContext = dbContext;
 
+    public IList<Story> GetAllStories()
+    {
+        return [.. _dbContext.Stories];
+    }
+
     public async Task<Story?> GetStoryById(string id)
     {
         try
@@ -17,6 +22,7 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
             Story? existingStory = await _dbContext
                 .Stories.Include(s => s.Parts)
                     .ThenInclude(p => p.Paragraphs)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (existingStory is not null)
@@ -27,7 +33,9 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
             if (storyFromApi is null)
                 return null;
 
-            _dbContext.Stories.Add(storyFromApi!);
+            _dbContext.Stories.Add(storyFromApi);
+
+            await _dbContext.SaveChangesAsync();
 
             return storyFromApi;
         }
@@ -54,9 +62,29 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
         }
     }
 
-    public async Task SaveStoryAsync(Story story)
+    public async Task<Story> UpdateStoryAsync(Story story)
     {
-        _dbContext.Stories.Update(story);
+        // If the entity is already tracked, just save changes
+        // Otherwise, attach it and mark as modified
+        var entry = _dbContext.Stories.Entry(story);
+        if (entry.State == EntityState.Detached)
+        {
+            _dbContext.Stories.Update(story);
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        return story;
+    }
+
+    public async Task UpdatePartAsync(Part part)
+    {
+        var entry = _dbContext.Entry(part);
+        if (entry.State == EntityState.Detached)
+        {
+            _dbContext.Parts.Update(part);
+        }
+
         await _dbContext.SaveChangesAsync();
     }
 }

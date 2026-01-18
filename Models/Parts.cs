@@ -6,15 +6,17 @@ public class Part
     public required string Title { get; set; }
     public DateTime? CreateDate { get; set; }
     public DateTime? ModifyDate { get; set; }
-
     public DateTime? LastScrapedDate { get; set; } = null;
-
     public string? Url { get; set; }
-
-    public int PartNumber { get; set; }
     public int Length { get; set; }
 
     public List<Paragraphs> Paragraphs { get; set; } = [];
 
     public string? RawContent { get; set; }
+
+    // 🔑 FOREIGN KEY
+    public string StoryId { get; set; } = null!;
+
+    // 🔁 NAVIGATION
+    public Story Story { get; set; } = null!;
 }

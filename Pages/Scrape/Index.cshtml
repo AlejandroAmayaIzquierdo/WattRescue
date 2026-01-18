@@ -1,0 +1,108 @@
+@page
+@model Pages.ScrapeModel
+
+@{
+    ViewData["Title"] = "Scrape";
+}
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="page-header">
+        <h1>Scrape a Story</h1>
+        <p>Add Wattpad stories to your offline library</p>
+    </div>
+
+    <div class="scrape-container">
+        <!-- Scrape Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                    </svg>
+                    Scrape a Story
+                </h2>
+                <p class="card-description">Enter a Wattpad story URL to add it to your library</p>
+            </div>
+            <div class="card-content">
+                <!-- URL Input -->
+                <form id="scrape-form" class="scrape-form" method="post" asp-antiforgery="true">
+                    <div class="input-group">
+                        <input type="text" id="url-input" asp-for="Request.Url" class="input"
+                            placeholder="https://www.wattpad.com/story/...">
+                        <button id="fetch-btn" class="btn btn-primary" type="submit">Fetch</button>
+                    </div>
+                </form>
+
+                <!-- Book Preview (hidden initially) -->
+                <div id="book-preview" class="book-preview @(Model.Story is not null ? "hidden" : "")">
+                    <div class="book-preview-cover">
+                        <img id="preview-cover" src="" alt="" style="display: none;">
+                        <svg id="preview-placeholder" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" x2="12" y1="15" y2="3" />
+                        </svg>
+                    </div>
+                    <div class="book-preview-info">
+                        <h3 id="preview-title">@Model.Story?.Title</h3>
+                    </div>
+
+                </div>
+
+                <!-- Progress Bar (hidden initially) -->
+                <div id="progress-container" class="progress-container hidden">
+                    <div class="progress-header">
+                        <span class="status" id="progress-status">Starting scrape...</span>
+                        <span class="count" id="progress-count">0/0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alert-error" class="alert alert-error hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" x2="12" y1="8" y2="12" />
+                        <line x1="12" x2="12.01" y1="16" y2="16" />
+                    </svg>
+                    <span id="error-message">Error message</span>
+                </div>
+
+                <div id="alert-success" class="alert alert-success hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    <span id="success-message">Success message</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Card -->
+        <div class="card how-it-works">
+            <div class="card-header">
+                <h2 class="card-title">How it works</h2>
+            </div>
+            <div class="card-content">
+                <ol>
+                    <li>Copy a Wattpad story URL from your browser</li>
+                    <li>Paste it in the input field above and click Fetch</li>
+                    <li>Review the story information</li>
+                    <li>Click Scrape to download all chapters</li>
+                    <li>Read your story offline from your library!</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+</html>

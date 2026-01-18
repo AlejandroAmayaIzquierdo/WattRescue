@@ -64,12 +64,7 @@ public class ScrapperService : IAsyncDisposable
             .. htmlDoc
                 .DocumentNode.Descendants()
                 .Where(n => n.Name == "p" && n.GetAttributeValue("data-p-id", "") != "")
-                .Select(n => new Paragraphs
-                {
-                    Id = Guid.NewGuid(),
-                    PartId = partId,
-                    Content = n.InnerText.Trim(),
-                }),
+                .Select(n => new Paragraphs { PartId = partId, Content = n.InnerText.Trim() }),
         ];
     }
 
