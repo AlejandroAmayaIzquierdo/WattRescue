@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Models;
 
 public class Part
@@ -18,5 +20,8 @@ public class Part
     public string StoryId { get; set; } = null!;
 
     // 🔁 NAVIGATION
+    [JsonIgnore]
     public Story Story { get; set; } = null!;
+
+    public int PartNumber { get; set; }
 }

@@ -5,6 +5,8 @@
     ViewData["Title"] = "Scrape";
 }
 
+<script src="~/js/scrape.js" defer></script>
+
 <!-- Main Content -->
 <main class="main-content">
     <div class="page-header">
@@ -24,20 +26,20 @@
                     </svg>
                     Scrape a Story
                 </h2>
-                <p class="card-description">Enter a Wattpad story URL to add it to your library</p>
+                <p class="card-description">Enter a Wattpad story URL to add it to your offline library</p>
             </div>
             <div class="card-content">
                 <!-- URL Input -->
                 <form id="scrape-form" class="scrape-form" method="post" asp-antiforgery="true">
                     <div class="input-group">
-                        <input type="text" id="url-input" asp-for="Request.Url" class="input"
+                        <input type="text" id="url-input" class="input" name="url" value="@(ViewData["Url"] ?? "")"
                             placeholder="https://www.wattpad.com/story/...">
                         <button id="fetch-btn" class="btn btn-primary" type="submit">Fetch</button>
                     </div>
                 </form>
 
                 <!-- Book Preview (hidden initially) -->
-                <div id="book-preview" class="book-preview @(Model.Story is not null ? "hidden" : "")">
+                <div id="book-preview" class="book-preview hidden">
                     <div class="book-preview-cover">
                         <img id="preview-cover" src="" alt="" style="display: none;">
                         <svg id="preview-placeholder" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -48,7 +50,7 @@
                         </svg>
                     </div>
                     <div class="book-preview-info">
-                        <h3 id="preview-title">@Model.Story?.Title</h3>
+                        <h3 id="preview-title">Test</h3>
                     </div>
 
                 </div>
@@ -57,7 +59,6 @@
                 <div id="progress-container" class="progress-container hidden">
                     <div class="progress-header">
                         <span class="status" id="progress-status">Starting scrape...</span>
-                        <span class="count" id="progress-count">0/0</span>
                     </div>
                     <div class="progress-bar">
                         <div id="progress-fill" class="progress-fill" style="width: 0%"></div>

@@ -11,8 +11,8 @@ public class IndexModel(StoriesService storiesService) : PageModel
 
     public IList<Story> Stories { get; set; } = [];
 
-    public void OnGet()
+    public async Task OnGet()
     {
-        Stories = _storiesService.GetAllStories();
+        Stories = await _storiesService.GetAllStories();
     }
 }

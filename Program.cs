@@ -42,10 +42,12 @@ builder.Services.AddQuartzServer(options => options.WaitForJobsToComplete = true
 
 builder.Services.AddScoped<StoriesService>();
 
-builder.Services.AddTransient<ScrapperService>();
+builder.Services.AddSingleton<ScrapperService>();
 
 // Add Razor Pages support
 builder.Services.AddRazorPages();
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -61,5 +63,7 @@ app.UseHttpsRedirection();
 
 // Map Razor Pages
 app.MapRazorPages();
+
+app.MapControllers();
 
 app.Run();

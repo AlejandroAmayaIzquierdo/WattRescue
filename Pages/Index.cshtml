@@ -4,10 +4,75 @@
     ViewData["Title"] = "Library";
 }
 
-<ul>
-    @foreach (var story in Model.Stories)
+<!-- Main Content -->
+<main class="main-content">
+    <div class="page-header">
+        <h1>My Library</h1>
+        <p id="book-count">@Model.Stories.Count books in your collection</p>
+    </div>
+
+    @if (Model.Stories.Count == 0)
     {
-        <img src="@story.Cover" alt="Cover Image" width="100" />
-        <h2>@story.Title</h2>
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+            <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m16 6 4 14" />
+                <path d="M12 6v14" />
+                <path d="M8 8v12" />
+                <path d="M4 4v16" />
+            </svg>
+            <h2>Your library is empty</h2>
+            <p>Start by scraping your first Wattpad story!</p>
+            <a href="scrape" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                Scrape a Story
+            </a>
+        </div>
     }
-</ul>
+    else
+    {
+        <!-- Book Grid -->
+        <div id="book-grid" class="book-grid">
+            @foreach (var story in Model.Stories)
+            {
+                <a href="reader/@story.Id" class="book-card">
+                    <div class="book-cover">
+                        <img src="@story.Cover" alt="@story.Title Cover">
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">@story.Title</h3>
+                        <div class="book-author">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <span>Test</span>
+                        </div>
+                        <div class="book-meta">
+                            @* <span class="badge ${book.status === 'complete' ? 'badge-complete' : 'badge-ongoing'}">
+                                ${book.status === 'complete' ? 'Complete' : 'Ongoing'}
+                            </span> *@
+                            <span class="chapter-count">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                @story.NumParts ch
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+
+
+
+</main>

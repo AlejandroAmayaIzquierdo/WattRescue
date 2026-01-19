@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Models;
 
 public class Paragraphs
@@ -11,5 +13,6 @@ public class Paragraphs
     public int PartId { get; set; }
 
     // 🔁 NAVIGATION
+    [JsonIgnore]
     public Part Part { get; set; } = null!;
 }

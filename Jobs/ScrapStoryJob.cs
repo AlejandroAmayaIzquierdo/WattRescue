@@ -11,51 +11,24 @@ public class ScrapStoryJob(StoriesService storiesService, ScrapperService scrapp
 
     public async Task Execute(IJobExecutionContext context)
     {
-        return;
-        Console.WriteLine("ScrapStoryJob executed at " + DateTime.Now);
+        var stories = await _storiesService.GetAllStories();
 
-        string STORY_ID = "199245730";
-
-        Story? story = await _storiesService.GetStoryById(STORY_ID);
-
-        if (story is null || string.IsNullOrEmpty(story.Url))
+        foreach (var story in stories)
         {
-            Console.WriteLine("Story not found.");
-            return;
-        }
-
-        Console.WriteLine($"Title: {story?.Title}");
-
-        foreach (var part in story!.Parts)
-        {
-            if (part.LastScrapedDate is null || part.LastScrapedDate < part.ModifyDate)
+            if (story.LastScrapedDate is null || story.LastScrapedDate < story.ModifyDate)
             {
-                Console.WriteLine($"Scraping Part {part.Title}");
-                string content = await _scrapperService.ScrapeChapterContentAsync(part);
-                Paragraphs[] scrapedPart = _scrapperService.ParseChapterContent(content, part.Id);
+                List<Part>? parts = await _scrapperService.ScrapeStoryPartsAsync(story);
+                story.LastScrapedDate = DateTime.UtcNow;
 
-                part.LastScrapedDate = DateTime.Now;
+                story.Parts.Clear();
 
-                Console.WriteLine(
-                    $"Finished Scraping Part  {part.Title} at {part.LastScrapedDate}"
-                );
-
-                part.RawContent = content;
-
-                part.Paragraphs.Clear();
-
-                part.Paragraphs.AddRange(scrapedPart);
+                if (parts is not null)
+                    story.Parts.AddRange(parts);
 
                 await _storiesService.UpdateStoryAsync(story);
-            }
-            else
-            {
-                Console.WriteLine($"Skipping Part {part.Title}, already up to date.");
+
+                await _scrapperService.CloseBrowserAsync();
             }
         }
-
-        story.LastScrapedDate = DateTime.Now;
-
-        await _storiesService.UpdateStoryAsync(story);
     }
 }

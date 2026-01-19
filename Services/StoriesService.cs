@@ -10,9 +10,9 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
 
     private readonly WattDbContext _dbContext = dbContext;
 
-    public IList<Story> GetAllStories()
+    public async Task<IList<Story>> GetAllStories()
     {
-        return [.. _dbContext.Stories];
+        return [.. await _dbContext.Stories.ToListAsync()];
     }
 
     public async Task<Story?> GetStoryById(string id)
@@ -25,19 +25,40 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.Id == id);
 
-            if (existingStory is not null)
-                return existingStory;
-
             Story? storyFromApi = await FetchStoryFromApi(id);
 
             if (storyFromApi is null)
                 return null;
 
-            _dbContext.Stories.Add(storyFromApi);
+            if (existingStory is null)
+            {
+                existingStory = storyFromApi;
+                _dbContext.Stories.Add(existingStory);
+            }
+            else
+            {
+                existingStory.Title = storyFromApi.Title;
+                existingStory.Description = storyFromApi.Description;
+                existingStory.Cover = storyFromApi.Cover;
+                existingStory.Url = storyFromApi.Url;
+                existingStory.NumParts = storyFromApi.NumParts;
+                existingStory.ModifyDate = storyFromApi.ModifyDate;
+                // Update parts
+                foreach (var apiPart in storyFromApi.Parts)
+                {
+                    var existingPart = existingStory.Parts.FirstOrDefault(p => p.Id == apiPart.Id);
+                    if (existingPart is null)
+                        existingStory.Parts.Add(apiPart);
+                    else
+                    {
+                        existingPart.ModifyDate = apiPart.ModifyDate;
+                    }
+                }
+            }
 
             await _dbContext.SaveChangesAsync();
 
-            return storyFromApi;
+            return existingStory;
         }
         catch (Exception ex)
         {
@@ -86,5 +107,25 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
         }
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public string ExtractStoryId(string url)
+    {
+        try
+        {
+            Uri uri = new(url);
+            string[] segments = uri.Segments;
+            if (segments.Length >= 3 && segments[1].TrimEnd('/') == "story")
+            {
+                string storynameUrl = segments[2];
+                string storyId = storynameUrl.Split('-')[0];
+                return storyId;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error extracting story ID: {ex.Message}");
+        }
+        return string.Empty;
     }
 }
