@@ -58,7 +58,7 @@ public class ScrapperService
 
                 partIndex++;
 
-                if (part.LastScrapedDate is null || part.LastScrapedDate < part.ModifyDate)
+                if (part.LastScrapedDate is not null && part.LastScrapedDate >= part.ModifyDate)
                 {
                     parts.Add(part);
                     continue;

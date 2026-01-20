@@ -83,30 +83,62 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
         }
     }
 
-    public async Task<Story> UpdateStoryAsync(Story story)
+    public async Task UpdateStoryAsync(Story story)
     {
-        // If the entity is already tracked, just save changes
-        // Otherwise, attach it and mark as modified
-        var entry = _dbContext.Stories.Entry(story);
-        if (entry.State == EntityState.Detached)
+        try
         {
-            _dbContext.Stories.Update(story);
+            // If the entity is already tracked, just save changes
+            // Otherwise, attach it and mark as modified
+            var entry = _dbContext.Stories.Entry(story);
+            if (entry.State == EntityState.Detached)
+            {
+                _dbContext.Stories.Update(story);
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
-
-        await _dbContext.SaveChangesAsync();
-
-        return story;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating story: {ex.Message}");
+        }
     }
 
     public async Task UpdatePartAsync(Part part)
     {
-        var entry = _dbContext.Entry(part);
-        if (entry.State == EntityState.Detached)
+        var existingPart = await _dbContext
+            .Parts.Include(p => p.Paragraphs)
+            .FirstOrDefaultAsync(p => p.Id == part.Id);
+
+        if (existingPart is null)
         {
-            _dbContext.Parts.Update(part);
+            _dbContext.Parts.Add(part);
+        }
+        else
+        {
+            existingPart.RawContent = part.RawContent;
+            existingPart.LastScrapedDate = part.LastScrapedDate;
+
+            // Reemplazar párrafos
+            existingPart.Paragraphs.Clear();
+            foreach (var paragraph in part.Paragraphs)
+            {
+                existingPart.Paragraphs.Add(
+                    new Paragraphs { PartId = existingPart.Id, Content = paragraph.Content }
+                );
+            }
         }
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateStoryLastScrapedAsync(string storyId)
+    {
+        var story = await _dbContext.Stories.FirstOrDefaultAsync(s => s.Id == storyId);
+        if (story is not null)
+        {
+            story.LastScrapedDate = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
     public string ExtractStoryId(string url)

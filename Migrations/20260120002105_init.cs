@@ -41,10 +41,10 @@ namespace WattRescue.Migrations
                     ModifyDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     LastScrapedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Url = table.Column<string>(type: "TEXT", nullable: true),
-                    PartNumber = table.Column<int>(type: "INTEGER", nullable: false),
                     Length = table.Column<int>(type: "INTEGER", nullable: false),
                     RawContent = table.Column<string>(type: "TEXT", nullable: true),
-                    StoryId = table.Column<string>(type: "TEXT", nullable: false)
+                    StoryId = table.Column<string>(type: "TEXT", nullable: false),
+                    PartNumber = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

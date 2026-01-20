@@ -10,12 +10,17 @@ namespace Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ScrapeController(ScrapperService scrapperService, StoriesService storiesService)
-    : ControllerBase
+public class ScrapeController(
+    ScrapperService scrapperService,
+    StoriesService storiesService,
+    IServiceScopeFactory serviceScopeFactory
+) : ControllerBase
 {
     private readonly ScrapperService _scrapperService = scrapperService;
 
     private readonly StoriesService _storiesService = storiesService;
+
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     public record StartScrapeRequest(string StoryUrl);
 
@@ -29,17 +34,32 @@ public class ScrapeController(ScrapperService scrapperService, StoriesService st
 
         _ = Task.Run(async () =>
         {
-            List<Part>? parts = await _scrapperService.ScrapeStoryPartsAsync(story);
+            try
+            {
+                List<Part>? scrapedParts = await _scrapperService.ScrapeStoryPartsAsync(story);
 
-            story.Parts.Clear();
-            if (parts is not null)
-                story.Parts.AddRange(parts);
+                if (scrapedParts is null)
+                    return;
 
-            story.LastScrapedDate = DateTime.UtcNow;
+                using var scope = _serviceScopeFactory.CreateScope();
+                var scopedStoriesService =
+                    scope.ServiceProvider.GetRequiredService<StoriesService>();
 
-            await _storiesService.UpdateStoryAsync(story);
+                // Guardar cada parte individualmente para evitar timeout
+                foreach (var part in scrapedParts)
+                {
+                    await scopedStoriesService.UpdatePartAsync(part);
+                }
 
-            await _scrapperService.CloseBrowserAsync();
+                // Actualizar la fecha de scraping del story
+                await scopedStoriesService.UpdateStoryLastScrapedAsync(storyId);
+
+                await _scrapperService.CloseBrowserAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in background scrape task: {ex.Message}");
+            }
         });
         return Ok(story);
     }

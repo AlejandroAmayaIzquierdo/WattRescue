@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WattRescue.Migrations
 {
     [DbContext(typeof(WattDbContext))]
-    [Migration("20260118160354_init")]
+    [Migration("20260120002105_init")]
     partial class init
     {
         /// <inheritdoc />
