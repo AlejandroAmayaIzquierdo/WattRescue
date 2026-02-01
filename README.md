@@ -2,6 +2,8 @@
 
 A web application to backup and read Wattpad stories offline. WattRescue scrapes story content from Wattpad and stores it locally in a SQLite database for offline reading.
 
+<img width="1313" height="906" alt="image" src="https://github.com/user-attachments/assets/d7ccf63d-a2d4-4b09-b77f-b10cfbd60b0e" />
+
 > [!IMPORTANT]  
 > This project made for learning purposes only. I am not meant to make any profit from it. Please respect Wattpad's terms of service and only use this tool for personal use. If some how the project get some traction, I will take it down immediately. I made this project to learn web scraping and a way for my girlfriend to read her favorite stories offline and save those stories from getting lost forever.
 
@@ -11,6 +13,11 @@ A web application to backup and read Wattpad stories offline. WattRescue scrapes
 - 📖 **Offline Reader** - Read saved stories without internet connection
 - 🔄 **Auto-sync** - Scheduled job checks for story updates every 30 minutes for only modified stories
 - 📊 **Progress Tracking** - Real-time scraping progress updates
+
+<img width="1351" height="660" alt="image" src="https://github.com/user-attachments/assets/53f3e9a2-6157-47dd-8f6a-fe738ac12137" />
+<img width="1290" height="904" alt="image" src="https://github.com/user-attachments/assets/8ea9ce2e-9bab-4c69-aadb-97429ceb98cb" />
+<img width="1898" height="909" alt="image" src="https://github.com/user-attachments/assets/d334b4c1-6620-46ad-83cc-92639bdc4175" />
+
 
 ## Tech Stack
 
