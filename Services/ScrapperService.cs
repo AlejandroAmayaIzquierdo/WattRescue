@@ -71,8 +71,8 @@ public class ScrapperService
 
                 Paragraphs[] scrapedPart = ParseChapterContent(content, part.Id);
                 part.RawContent = content;
-                part.Paragraphs.Clear();
-                part.Paragraphs.AddRange(scrapedPart);
+
+                part.Content = string.Join("\n\n", scrapedPart.Select(p => p.Content));
 
                 part.LastScrapedDate = DateTime.UtcNow;
 

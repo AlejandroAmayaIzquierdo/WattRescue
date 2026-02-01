@@ -7,7 +7,6 @@ public class WattDbContext(DbContextOptions<WattDbContext> options) : DbContext(
 {
     public DbSet<Story> Stories { get; set; }
     public DbSet<Part> Parts { get; set; }
-    public DbSet<Paragraphs> Paragraphs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -17,14 +16,5 @@ public class WattDbContext(DbContextOptions<WattDbContext> options) : DbContext(
             .WithOne(p => p.Story)
             .HasForeignKey(p => p.StoryId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder
-            .Entity<Part>()
-            .HasMany(p => p.Paragraphs)
-            .WithOne(pg => pg.Part)
-            .HasForeignKey(pg => pg.PartId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Paragraphs>().Property(p => p.Id).ValueGeneratedOnAdd();
     }
 }

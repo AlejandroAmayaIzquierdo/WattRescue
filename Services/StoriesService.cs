@@ -21,7 +21,6 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
         {
             Story? existingStory = await _dbContext
                 .Stories.Include(s => s.Parts)
-                    .ThenInclude(p => p.Paragraphs)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(s => s.Id == id);
 
@@ -105,9 +104,7 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
 
     public async Task UpdatePartAsync(Part part)
     {
-        var existingPart = await _dbContext
-            .Parts.Include(p => p.Paragraphs)
-            .FirstOrDefaultAsync(p => p.Id == part.Id);
+        var existingPart = await _dbContext.Parts.FirstOrDefaultAsync(p => p.Id == part.Id);
 
         if (existingPart is null)
         {
@@ -119,13 +116,7 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
             existingPart.LastScrapedDate = part.LastScrapedDate;
 
             // Reemplazar párrafos
-            existingPart.Paragraphs.Clear();
-            foreach (var paragraph in part.Paragraphs)
-            {
-                existingPart.Paragraphs.Add(
-                    new Paragraphs { PartId = existingPart.Id, Content = paragraph.Content }
-                );
-            }
+            existingPart.Content = part.Content;
         }
 
         await _dbContext.SaveChangesAsync();
@@ -159,5 +150,15 @@ public class StoriesService(IHttpClientFactory httpClientFactory, WattDbContext 
             Console.WriteLine($"Error extracting story ID: {ex.Message}");
         }
         return string.Empty;
+    }
+
+    public async Task<IEnumerable<(int Id, string Title)>> GetChaptersList(string storyId)
+    {
+        var chapters = await _dbContext
+            .Parts.Where(p => p.StoryId == storyId)
+            .Select(p => new { p.Id, p.Title })
+            .ToListAsync();
+
+        return chapters.Select(c => (c.Id, c.Title));
     }
 }

@@ -28,7 +28,7 @@ public class ReaderModel(StoriesService storiesService) : PageModel
             : null;
     public Story? Story { get; internal set; }
 
-    public List<Paragraphs> Paragraphs { get; internal set; } = [];
+    public List<string> Paragraphs { get; internal set; } = [];
 
     public async Task<IActionResult> OnGet([FromQuery] int? page)
     {
@@ -44,10 +44,28 @@ public class ReaderModel(StoriesService storiesService) : PageModel
         if (Story == null)
             return RedirectToPage("/Index");
 
+        if (PageNumber < 1 || PageNumber > Story.NumParts)
+            return RedirectToPage($"/Index");
+
         Paragraphs =
-            Story.Parts.OrderBy(part => part.Id).ElementAtOrDefault(PageNumber - 1)?.Paragraphs
+            Story
+                .Parts.OrderBy(part => part.Id)
+                .ElementAtOrDefault(PageNumber - 1)
+                ?.Content?.Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
+                .ToList()
             ?? [];
 
         return Page();
+    }
+
+    public async Task<(int Id, string Title)> GetChapterInfo(int pageNumber = -1)
+    {
+        if (StoryId == null)
+            return (0, string.Empty);
+
+        if (pageNumber == -1)
+            pageNumber = PageNumber;
+        var chapters = await _storiesService.GetChaptersList(StoryId);
+        return chapters.ElementAtOrDefault(pageNumber - 1);
     }
 }

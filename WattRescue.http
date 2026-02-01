@@ -1,6 +1,0 @@
-@WattRescue_HostAddress = http://localhost:5236
-
-GET {{WattRescue_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

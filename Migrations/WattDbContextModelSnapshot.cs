@@ -17,7 +17,7 @@ namespace WattRescue.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
 
-            modelBuilder.Entity("Models.Paragraphs", b =>
+            modelBuilder.Entity("Models.Part", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -25,28 +25,6 @@ namespace WattRescue.Migrations
 
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Length")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ParagraphNumber")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PartId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PartId");
-
-                    b.ToTable("Paragraphs");
-                });
-
-            modelBuilder.Entity("Models.Part", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("TEXT");
@@ -119,17 +97,6 @@ namespace WattRescue.Migrations
                     b.ToTable("Stories");
                 });
 
-            modelBuilder.Entity("Models.Paragraphs", b =>
-                {
-                    b.HasOne("Models.Part", "Part")
-                        .WithMany("Paragraphs")
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Part");
-                });
-
             modelBuilder.Entity("Models.Part", b =>
                 {
                     b.HasOne("Models.Story", "Story")
@@ -139,11 +106,6 @@ namespace WattRescue.Migrations
                         .IsRequired();
 
                     b.Navigation("Story");
-                });
-
-            modelBuilder.Entity("Models.Part", b =>
-                {
-                    b.Navigation("Paragraphs");
                 });
 
             modelBuilder.Entity("Models.Story", b =>

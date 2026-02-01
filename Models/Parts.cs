@@ -12,7 +12,7 @@ public class Part
     public string? Url { get; set; }
     public int Length { get; set; }
 
-    public List<Paragraphs> Paragraphs { get; set; } = [];
+    public string? Content { get; set; } = null;
 
     public string? RawContent { get; set; }
 

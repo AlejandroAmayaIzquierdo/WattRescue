@@ -1,0 +1,11 @@
+services:
+  WattRescue:
+    image: wattrescue
+    build:
+      context: .
+    container_name: wattrescue
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Local=Data Source=/app/data/WattRescue.db

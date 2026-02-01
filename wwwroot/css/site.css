@@ -726,6 +726,12 @@ a {
   padding: 0.5rem;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.toc-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .toc-item {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WattRescue.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,6 +42,7 @@ namespace WattRescue.Migrations
                     LastScrapedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Url = table.Column<string>(type: "TEXT", nullable: true),
                     Length = table.Column<int>(type: "INTEGER", nullable: false),
+                    Content = table.Column<string>(type: "TEXT", nullable: true),
                     RawContent = table.Column<string>(type: "TEXT", nullable: true),
                     StoryId = table.Column<string>(type: "TEXT", nullable: false),
                     PartNumber = table.Column<int>(type: "INTEGER", nullable: false)
@@ -57,33 +58,6 @@ namespace WattRescue.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Paragraphs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ParagraphNumber = table.Column<int>(type: "INTEGER", nullable: false),
-                    Length = table.Column<int>(type: "INTEGER", nullable: false),
-                    Content = table.Column<string>(type: "TEXT", nullable: true),
-                    PartId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Paragraphs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Paragraphs_Parts_PartId",
-                        column: x => x.PartId,
-                        principalTable: "Parts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Paragraphs_PartId",
-                table: "Paragraphs",
-                column: "PartId");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Parts_StoryId",
                 table: "Parts",
@@ -93,9 +67,6 @@ namespace WattRescue.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Paragraphs");
-
             migrationBuilder.DropTable(
                 name: "Parts");
 
