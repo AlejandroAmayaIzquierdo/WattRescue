@@ -27,6 +27,29 @@ A web application to backup and read Wattpad stories offline. WattRescue scrapes
 
 ## Getting Started
 
+### Release version
+
+1. **Download the latest release** from the [Releases](https://github.com/AlejandroAmayaIzquierdo/WattRescue/releases)
+2. **Extract the ZIP file** to your desired location
+3. **Run the application** by executing:
+
+   ```bash
+   dotnet WattRescue.dll
+   ```
+
+   Or simply double-click the `WattRescue.exe` file
+
+### Docker
+
+1. **Build and start the Docker containers**
+   ```bash
+   docker compose up --build -d
+   ```
+   - You can modify the `docker-compose.yml` file to use a different volume.
+2. **Access the application** at `http://localhost:5000`
+
+### Local Development
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/WattRescue.git

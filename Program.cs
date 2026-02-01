@@ -77,4 +77,36 @@ app.MapRazorPages();
 
 app.MapControllers();
 
+// Open browser after app starts
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var url = app.Urls.FirstOrDefault() ?? "http://localhost:5000";
+    OpenBrowser(url);
+});
+
 app.Run();
+
+static void OpenBrowser(string url)
+{
+    try
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo { FileName = url, UseShellExecute = true }
+            );
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            System.Diagnostics.Process.Start("xdg-open", url);
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            System.Diagnostics.Process.Start("open", url);
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Unable to open browser: {ex.Message}");
+    }
+}
